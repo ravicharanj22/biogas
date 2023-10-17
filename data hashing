@@ -1,0 +1,31 @@
+from algosdk import AlgodClient, transaction
+import hashlib
+
+# Initialize the Algod client
+algod_address = "http://localhost:4001"  # Update this with the address of your Algod node
+algod_token = "your-algod-token"  # Update this with your Algod node's token
+algod_client = AlgodClient(algod_token, algod_address)
+
+# Your data to be hashed
+data_to_hash = "Hello, Algorand!"
+
+# Compute the SHA-256 hash of the data
+hashed_data = hashlib.sha256(data_to_hash.encode()).hexdigest()
+
+# Algorand wallet address (sender)
+sender_address = "YOUR_SENDER_ADDRESS"  # Update this with your Algorand wallet address
+
+# Algorand wallet private key (sender)
+sender_private_key = "YOUR_SENDER_PRIVATE_KEY"  # Update this with your Algorand wallet private key
+
+# Create a transaction to submit the hash to the blockchain
+params = algod_client.suggested_params()
+txn = transaction.PaymentTxn(sender_address, params, sender_address, 0, note=hashed_data)
+
+# Sign the transaction
+signed_txn = txn.sign(sender_private_key)
+
+# Send the transaction to the Algorand blockchain
+txid = algod_client.send_transaction(signed_txn)
+
+print(f"Transaction ID: {txid}")
